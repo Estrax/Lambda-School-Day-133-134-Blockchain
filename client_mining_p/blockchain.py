@@ -129,7 +129,11 @@ blockchain = Blockchain()
 
 
 @app.route('/mine', methods=['POST'])
-def mine(proof):
+def mine():
+
+    values = request.get_json()
+    proof = values.get('proof')
+
     # We run the proof of work algorithm to get the next proof...
     last_block = blockchain.last_block
 
@@ -153,12 +157,8 @@ def mine(proof):
     else:
         response = {
             'message': "Wrong proof!",
-            'index': last_block['index'],
-            'transactions': last_block['transactions'],
-            'proof': last_block['proof'],
-            'previous_hash': last_block['previous_hash'],
         }
-        return jsonify(response), 500
+        return jsonify(response), 200
 
     # # Forge the new BLock by adding it to the chain
     #
@@ -193,7 +193,10 @@ def full_chain():
 
 @app.route('/last_proof', methods=['GET'])
 def last_proof_endpoint():
-    return jsonify(blockchain.last_block['proof']), 200
+    response = {
+        'proof': blockchain.last_block.get('proof')
+    }
+    return jsonify(response), 200
 
 # Note, when demoing, start with this, then change to the below
 # if __name__ == '__main__':
