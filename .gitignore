@@ -105,3 +105,12 @@ venv.bak/
 
 # id file for miner
 my_id.txt
+
+# vscode
+.vscode/
+
+# credit_for_mining id
+credit_for_mining_p/my_id
+
+# lockfile
+Pipfile.lock
