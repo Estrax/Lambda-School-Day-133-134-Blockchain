@@ -1,7 +1,19 @@
 import hashlib
 import requests
-
+from uuid import uuid4
 import sys
+import os.path
+
+
+def get_id():
+    if not os.path.exists(os.path.abspath('./my_id')):
+        print('making new ID')
+        f = open('./my_id', 'w')
+        f.write(str(uuid4()).replace('-', ''))
+        f.close()
+    with open('./my_id', 'r') as f:
+        content = f.readlines()
+        return content[0]
 
 
 def proof_of_work(last_proof):
@@ -34,11 +46,13 @@ def valid_proof(last_proof, proof):
 if __name__ == '__main__':
     # What node are we interacting with?
     if len(sys.argv) > 1:
-        node = int(sys.argv[1])
+        node = f"http://localhost:{int(sys.argv[1])}"
     else:
         node = "http://localhost:5000"
 
     coins_mined = 0
+    uid = get_id()
+    print("USER ID:", uid)
     # Run forever until interrupted
     while True:
         # Get the last proof from the server
@@ -46,7 +60,7 @@ if __name__ == '__main__':
         data = r.json()
         new_proof = proof_of_work(data.get('proof'))
 
-        post_data = {"proof": new_proof}
+        post_data = {"proof": new_proof, "user_id": uid}
 
         r = requests.post(url=node + "/mine", json=post_data)
         data = r.json()
